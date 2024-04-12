@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import request, session
+from flask import request, session,jsonify
 from flask_restful import Resource
 
 from config import app, db, api
@@ -26,16 +26,12 @@ class Signup(Resource):
         return user.to_dict(), 201
 
 class CheckSession(Resource):
-    
     def get(self):
         user_id = session.get('user_id')
-        if user_id:
+        if user_id is not None:
             user = User.query.filter(User.id == user_id).first()
-            if user:
-                return user.to_dict(), 200
-            else:
-                return {'error': 'User not found'}, 404
-        
+            if user is not None:
+                return user.to_dict()
         return {}, 204
 
 class Login(Resource):
@@ -59,7 +55,7 @@ class Logout(Resource):
 
 api.add_resource(ClearSession, '/clear', endpoint='clear')
 api.add_resource(Signup, '/signup', endpoint='signup')
-api.add_resource(CheckSession, '/check-session', endpoint='check_session')
+api.add_resource(CheckSession, '/check_session', endpoint='check_session')
 api.add_resource(Login, '/login', endpoint='login')
 api.add_resource(Logout, '/logout', endpoint='logout')
 
